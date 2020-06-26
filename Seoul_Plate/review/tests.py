@@ -56,7 +56,6 @@ class ReviewTestCase(APITestCase):
         self.assertEqual(review_response.review_text, data['review_text'])
         # self.assertEqual(review_response.review_image, data['review_image'])
 
-
     def test_should_delete_review(self):
         """
         Request : DELETE - /api/reviews/
