@@ -16,31 +16,33 @@ class Review(models.Model):
     - taste_value
     """
     # TextChoices 사용: https://docs.djangoproject.com/en/3.0/ref/models/fields/#enumeration-types
-    GOOD = 'GOOD'
-    SOSO = 'SOSO'
-    BAD = 'BAD'
 
-    TASTE_CHOICES = [
-        (GOOD, 'Good'),
-        (SOSO, 'SoSo'),
-        (BAD, 'Bad'),
-    ]
+    class TasteChoice(models.TextChoices):
+        GOOD = 'GOOD'
+        SOSO = 'SOSO'
+        BAD = 'BAD'
 
+    taste_value = models.CharField(max_length=5, choices=TasteChoice.choices, default='SOSO')
+    # TASTE_CHOICES = [
+    #     (GOOD, 'Good'),
+    #     (SOSO, 'SoSo'),
+    #     (BAD, 'Bad'),
+    # ]
 
     # 리뷰 식당
     # 적절한 related_name 설정
-    owner_rest = models.ForeignKey(Restaurant, related_name='owner_rest', on_delete=models.CASCADE)
+    owner_rest = models.ForeignKey('restaurant.Restaurant', related_name='reviewed_rest', on_delete=models.CASCADE)
     # 작성 유저
     # null=False
-    owner_user = models.ForeignKey(User, related_name='owner_user', on_delete=models.CASCADE, null=True)
+    owner_user = models.ForeignKey('auth.User', related_name='reviewed_owner', on_delete=models.CASCADE)
     # 리뷰 내용
     review_text = models.TextField()
     # 음식 사진
-    review_image = models.ImageField(upload_to='review_image', null=True, blank=True)
+    review_image = models.ImageField(upload_to='review_image', null=True)
     # 맛 선택
-    taste_value = models.CharField(max_length=10, choices=TASTE_CHOICES, default=SOSO)
+    # taste_value = models.CharField(max_length=10, choices=TASTE_CHOICES, default=SOSO)
     # 작성 시간
     updated_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ['-updated_at']
+        ordering = ['-id']

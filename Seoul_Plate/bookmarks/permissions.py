@@ -6,4 +6,4 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS:
             return True
 
-        return obj.bookmarks == request.user
+        return obj.bookmarked_user == request.user

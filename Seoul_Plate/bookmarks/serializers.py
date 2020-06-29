@@ -2,18 +2,18 @@ from rest_framework import serializers, status
 from rest_framework.response import Response
 
 from restaurant.serializer import RestSerializer
-from .models import BookMark
+from .models import Bookmark
 
 
-class BookMarkSerializer(serializers.ModelSerializer):
+class BookmarkSerializer(serializers.ModelSerializer):
     """ list: user_id, restaurant_id Serializer"""
 
     class Meta:
-        model = BookMark
+        model = Bookmark
         fields = (
             'id',
             'restaurant',
-            'bookmarks',
+            'bookmarked_user',
         )
 
 
@@ -22,7 +22,7 @@ class UserBookMarkSerializer(serializers.ModelSerializer):
     restaurant = RestSerializer(read_only=True)
 
     class Meta:
-        model = BookMark
+        model = Bookmark
         fields = (
             'restaurant',
         )
