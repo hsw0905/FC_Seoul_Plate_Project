@@ -24,7 +24,7 @@ class UserViewSet(mixins.CreateModelMixin,
         if self.action in ('login', 'create'):
             return [AllowAny()]
         # if -> elif
-        if self.action == 'logout':
+        elif self.action in ('logout', 'change_password'):
             return [IsOwner()]
         return super().get_permissions()
 
@@ -41,3 +41,14 @@ class UserViewSet(mixins.CreateModelMixin,
     def logout(self, request, *args, **kwargs):
         request.user.auth_token.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @action(methods=['post'], detail=False)
+    def change_password(self, request, *args, **kwargs):
+        new_password = request.data.get('password')
+        instance = User.objects.get(request.data.get('username'))
+        print('here!!!!')
+        instance.set_password(new_password)
+        instance.save()
+        return Response(status=status.HTTP_201_CREATED)
+
+

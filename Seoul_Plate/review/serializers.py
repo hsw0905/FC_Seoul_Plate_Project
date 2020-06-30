@@ -11,6 +11,7 @@ class ReviewSerializer(ModelSerializer):
         fields = (
             'id',
             'owner_rest',
+            'owner_user',
             'review_text',
             'review_image',
             'taste_value',

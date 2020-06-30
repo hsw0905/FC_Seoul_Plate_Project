@@ -10,11 +10,12 @@ from rest_framework.test import APITestCase
 
 class UserTestCase(APITestCase):
     def setUp(self) -> None:
+        self.temp_password = '12345'
         self.users = baker.make('auth.User', _quantity=3)
-        self.test_user = User.objects.create(username="test", password="1111")
-        self.test_user.set_password(raw_password="1111")
+        self.test_user = User.objects.create(username="test", password=self.temp_password)
+        self.test_user.set_password(raw_password=self.temp_password)
         self.test_user.save()
-        self.data = {"username": "test", "password": "1111"}
+        self.data = {"username": "test", "password": self.temp_password}
 
     def test_should_detail_user(self):
         """
@@ -24,6 +25,7 @@ class UserTestCase(APITestCase):
         user = self.users[0]
         self.client.force_authenticate(user=user)
         response = self.client.get(f'/api/user/{user.id}')
+
         user_response = Munch(response.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(user_response.id, user.id)
@@ -31,10 +33,10 @@ class UserTestCase(APITestCase):
 
     def test_should_create_user(self):
         """
-        Request : POST - /api/user/
+        Request : POST - /api/user
         """
-        data = {"username": "newuser", "password": "1111"}
-        response = self.client.post('/api/user/', data=data)
+        data = {"username": "newuser", "password": self.temp_password}
+        response = self.client.post('/api/user', data=data)
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         user_response = Munch(response.data)
@@ -62,6 +64,7 @@ class UserTestCase(APITestCase):
         self.client.force_authenticate(user=user)
         data = {"username": "changed"}
         response = self.client.patch(f'/api/user/{user.id}', data=data)
+
         user_response = Munch(response.data)
         self.assertNotEqual(user_response.username, prev_name)
 
@@ -70,6 +73,7 @@ class UserTestCase(APITestCase):
         Request : POST - /api/user/login
         """
         response = self.client.post('/api/user/login', data=self.data)
+
         user_response = Munch(response.data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertTrue(user_response.token)
@@ -79,10 +83,21 @@ class UserTestCase(APITestCase):
         """
         Request : DELETE - /api/user/logout
         """
-        response = self.client.post('/api/user/login', data=self.data)
-        token = response.data['token']
-        self.client.force_authenticate(user=self.test_user, token=token)
-        response = self.client.delete('/api/user/logout', HTTP_AUTHORIZATION='Token ' + token)
+        self.client.force_authenticate(user=self.test_user)
+        response = self.client.delete('/api/user/logout')
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertFalse(Token.objects.filter(pk=token).exists())
+        self.assertFalse(Token.objects.filter(user_id=self.test_user.id).exists())
+
+    def test_should_change_password(self):
+        data = {"username": "test", "password": "2222"}
+        prev_password = self.test_user.password
+        self.client.force_authenticate(user=self.test_user)
+        response = self.client.post('/api/user/change_password', data=data)
+
+        user_response = Munch(response.data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(user_response.username, data['username'])
+        self.assertNotEqual(prev_password, user_response.password)
+        print(response)
+        self.fail()

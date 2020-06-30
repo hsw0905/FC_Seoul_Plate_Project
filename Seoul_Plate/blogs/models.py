@@ -11,7 +11,7 @@ class Blog(models.Model):
     #  포스트 이미지
     # PG를 사용한다면 ArrayField(models.ImageField) 이런식으로 image list 저장 가능
     # blank=True 허용해서 admin에서 사진 올리지 않게 설정 가능
-    post_image = models.ImageField(upload_to='blog_image', null=True)
+    post_image = models.ImageField(upload_to='blog_image', null=True, blank=True)
     #  포스트 작성 유저
     # FK 연결은 Class가 아니라 str으로 사용해서 순환참조 방지: https: // code.djangoproject.com / ticket / 167
     post_owner = models.ForeignKey('auth.User', default='', on_delete=models.CASCADE)

@@ -24,9 +24,9 @@ class RestaurantTestCase(APITestCase):
 
     def test_should_list_restaurant(self):
         """
-        Request : GET - /api/restaurant/
+        Request : GET - /api/restaurants/
         """
-        response = self.client.get('/api/restaurant/')
+        response = self.client.get('/api/restaurants')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         for test_rest, response_rest in zip(self.query_set, response.data['results']):
             self.assertEqual(test_rest.id, response_rest['id'])
@@ -34,9 +34,9 @@ class RestaurantTestCase(APITestCase):
 
     def test_should_detail_restaurant(self):
         """
-        Request : GET - /api/restaurant/{restaurant_id}
+        Request : GET - /api/restaurants/{restaurant_id}
         """
         test_restaurant = self.test_restaurant
-        response = self.client.get(f'/api/restaurant/{test_restaurant.id}')
+        response = self.client.get(f'/api/restaurants/{test_restaurant.id}')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(test_restaurant.id, response.data['id'])

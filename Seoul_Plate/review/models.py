@@ -38,7 +38,7 @@ class Review(models.Model):
     # 리뷰 내용
     review_text = models.TextField()
     # 음식 사진
-    review_image = models.ImageField(upload_to='review_image', null=True)
+    review_image = models.ImageField(upload_to='review_image', null=True, blank=True)
     # 맛 선택
     # taste_value = models.CharField(max_length=10, choices=TASTE_CHOICES, default=SOSO)
     # 작성 시간

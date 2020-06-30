@@ -26,7 +26,8 @@ class BlogTestCase(APITestCase):
         }
 
         self.client.force_authenticate(user=self.user)
-        response = self.client.post('/api/blogs/', data=data)
+        response = self.client.post('/api/blog', data=data)
+
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         blog_response = Munch(response.data)
         self.assertTrue(blog_response.id)
@@ -36,7 +37,7 @@ class BlogTestCase(APITestCase):
     def test_post_list(self):
         """"포스트 리스트"""
         self.client.force_authenticate(user=self.user)
-        response = self.client.get('/api/blogs/')
+        response = self.client.get('/api/blog')
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         for blog_response, blog in zip(response.data['results'], self.blogs[::-1]):
@@ -46,7 +47,7 @@ class BlogTestCase(APITestCase):
     def test_post_detail(self):
         """"포스트 디테일"""
         self.client.force_authenticate(user=self.user)
-        response = self.client.get(f'/api/blogs/{self.blog.id}')
+        response = self.client.get(f'/api/blog/{self.blog.id}')
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         blog_response = Munch(response.data)
@@ -62,7 +63,8 @@ class BlogTestCase(APITestCase):
         }
 
         self.client.force_authenticate(user=self.user)
-        response = self.client.patch(f'/api/blogs/{self.blog.id}', data=data)
+        response = self.client.patch(f'/api/blog/{self.blog.id}', data=data)
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         blog_response = Munch(response.data)
         self.assertEqual(blog_response.post_contents, data['post_contents'])
@@ -71,7 +73,7 @@ class BlogTestCase(APITestCase):
     def test_post_delete(self):
         """포스트 삭제 """
         self.client.force_authenticate(user=self.user)
-        response = self.client.delete(f'/api/blogs/{self.blog.id}')
+        response = self.client.delete(f'/api/blog/{self.blog.id}')
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(Blog.objects.filter(pk=self.blog.id).count(), 0)
